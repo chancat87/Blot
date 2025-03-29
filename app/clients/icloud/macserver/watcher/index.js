@@ -144,11 +144,13 @@ const watch = async (blogID) => {
   let initialScanComplete = false;
 
   console.log(`Starting watcher for blog folder: ${blogID}`);
+  // Monitor the CPU usage on the macserver before and after
+  // making any changes to the polling intervals
   const watcher = chokidar
     .watch(blogPath, {
       usePolling: true,
-      interval: 2000, // Poll every 2 seconds
-      binaryInterval: 5000, // Poll every 5 seconds for binary files
+      interval: 250, // Poll every 0.25s for non-binary files
+      binaryInterval: 1000, // Poll every 1s for binary files
       ignoreInitial: false, // Process initial events
       ignored: /(^|[/\\])\../, // Ignore dotfiles
     })

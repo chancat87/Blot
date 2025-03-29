@@ -1,37 +1,53 @@
- reset sync locks on server start?
+Resolve paths properly like a browser would in replaceFolderLinks
+- e.g. ../Type -> /Type if there is no more 'up' to go
+- respect ./image.jpg if the parent stylesheet is located in a subdirectory, e.g. /styles/sheet.css and ./image.jpg
+- Fix bug which is preventing the helped from working on Erin's site
+- Handle lowercase files properly (dropbox client!!!!) and resolve issue with discombobulated
 
-    why doesn't docker restart reset sync locks?
-    update stale and retries to ensure that on restart we can re-aquire sync lock?
 
-Add script to resync all icloud folders – make sure they are up to date
+
+Run dropbox reset as ec2-user not root
+- run chown on all data files...
+
+Are there any missing templates because of the switch from lowercase to true case?
+
+Fix issues with menu links based on case-sensitivity switch
+
+Fix issues with bad permalinks based on case-sensitivity switch
+
+Fix template partial embeddings which no longer work because of switch from lowercase to true case:
+- e.g. {{> /pages/home.txt}} when pages is really Pages
+- we should resolve the case-insensitive path to file when saving a template and parsing its partials
+
+How to fix menu links with incorrect case IDs?
+- Write script to catch these and patch
+
+Why do posts on blog_eddd8e5 take so long to set, let alone rebuild?
+
+Clean out all but the neccessary information from deleted entries to save redis space
+
+We should use the helper/transformer to speed up screenshot re-generation
+
+Watch the logs for requests to files in blog folder which aren't passed to CDN
+- add some logging to blog/assets.js
+
+Make iCloud site routes blocking so the mac server waits for the main server to finish building before sending the next sync update? But consider timeout
+
+Think about how to purge the old versions of files cached by bunny's permacache
+
+Fix bug which prevents the CDN url replacer working for drafts
+- Refactor so the draft route relies more on the middleware function
+- At the moment, drafts bypass a lot of the code – many template features won't work
+
+How can we serve template files over CDN?
+- do we have to remap references to other files in stylesheets since we're doing a switcheroo
+
+Image cacher should work for webp, tiff, etc. as well as JPG
 
 Fix bug with template error causing server to go down (issue with folder rebuild)
-
     reproduce bug with chinese template?
 
-Trigger an error with build template on iCloud client to work out why server crashed
-- suspect it's to do with async handling in util establish sync lock
-- this should not tank the server...
-    [23/Mar/2025:00:55:29 +0000] [green] blog_8b57c40 sync_a1eb8a9 client=icloud Error building templates from folder
-    [23/Mar/2025:00:55:29 +0000] [green] blog_8b57c40 sync_a1eb8a9 client=icloud Releasing lock
-    /usr/src/app/app/models/template/getMetadata.js:13
-          err = new Error("No template: " + id);
-                ^
-
-    Error: No template: blog_8b57c40:xxx-xxx-xxx
-        at Command.callback (/usr/src/app/app/models/template/getMetadata.js:13:13)
-        at normal_reply (/usr/src/app/node_modules/redis/index.js:655:21)
-        at RedisClient.return_reply (/usr/src/app/node_modules/redis/index.js:753:9)
-        at JavascriptRedisParser.returnReply (/usr/src/app/node_modules/redis/index.js:138:18)
-        at JavascriptRedisParser.execute (/usr/src/app/node_modules/redis-parser/lib/parser.js:544:14)
-        at Socket.<anonymous> (/usr/src/app/node_modules/redis/index.js:219:27)
-        at Socket.emit (node:events:524:28)
-        at addChunk (node:internal/streams/readable:561:12)
-        at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
-        at Readable.push (node:internal/streams/readable:392:5) {
-      code: 'ENOENT'
-    }
-
+Add script to resync all icloud folders – make sure they are up to date
 
 Check that Google Drive is staying in sync:
 - login -> node scripts/google-drive/reset.js
@@ -40,34 +56,10 @@ Check that Google Drive is staying in sync:
 Come up with plan to handle google docs on disconnection from Google drive -> convert to markdown?
 - tell henryirvine about issues with his site
 
-Write proper tests for Google Drive client
-
----
-
-Work out why there are still 502 errors 'Blot is offline' during deployments during the failtimout window – why isn't proxy next retries kicking in?
-- Monitor the nginx error log for 'disabled' while doing a deployment
-- Try and work out rigorously how try_next upstream works, make sure it does this for 502
-
-Work out why iCloud bugs out with philpin's folder
-- Re-set up development env so I can test this
-- It seems that when you try and send changes to blogs with folder locks pending, the follow up requests always fail. I think we need to re-create the read stream
-- Issue seems to be with modified time – what is the significates of 2262-04-11T23?
-- issue seems to be with inital transfer, mtimes, etc. This means 2262-04-11T23:47:16.854775807Z is the last valid timestamp before integer overflow occurs in a nanosecond-precision int64_t timestamp system.
-- Can we get rid of chokidar and stream changes use brctl logs? or events?
-- We're using polling to workaround the issue with chokidar and large numbers of 
-  - https://github.com/bluwy/chokidar-lots-of-files-repro
-  - https://github.com/paulmillr/chokidar/issues/1385
-  - I made changes to macserver/README so revert them since the change had no effect
-- Can we refactor anything to ensure as much data is flowing from iCloud -> Blot server to save on bandwidth?
-- Make the setup flow more robust – only start watching for changes once the initial transfer is complete
-- Is there an issue writing preview files?
-  - maybe during other operations?
-  - is the issue when the preview file already exists?
-  - with spaces in their name?
-- Check in on the number of file descriptors used by the macserver
-- Work out why stats are failing
-- Test reboot of entire macserver – does file descriptor setting persist?
-- Catch the infinite email loop on Blot's server
+Write proper tests for clients:
+- Dropbox
+- Google Drive
+- iCloud
 
 Make initial health check /health more powerful
 - inspect blogs directory and verify there are the expected number of folders
@@ -89,8 +81,6 @@ Migrate scripts in bashrc into deployment flow
 
 Use npm run test in production
 - echo github env -> scripts/tests/.env
-
-Can we configure email notifications easily with netdata?
 
 ---
 
@@ -132,8 +122,6 @@ Move data dir to s3
   - Git S3: https://news.ycombinator.com/item?id=41887004
 
 Fix bad links (e.g. incorrect case) in files at build-time rather than run-time so we can avoid the expensive disk lookups in blog/assets.js
-- how does this work with the dropbox client which stores files on disk lowercase?
-- can we rewrite the dropbox client to not do this?
 
 Add local multi container setup to mirror production
 
@@ -227,16 +215,13 @@ Investigate bug with link format using filename and [follow up with yct](https:/
 
 Overdue subscription payment form not working
 - Possible bug introduced by recent stripe upgrade
-- Revisit stripe integration and try to update
+- Migrate [Stripe library to v7](https://github.com/stripe/stripe-node/wiki/Migration-guide-for-v7)
 
 Fix file sorting on folder on dashboard (clicking 'Date modified' e.g. does nothing)
 
 Improvements to local folder experience
 - Interpolate fonts based on an ID (a la web template editor)
 - Interpolate syntax highlighting based on an ID
-
-Disconnecting a large folder from Dropbox times out
-- then possible sync lock bug
 
 Fix bugs with template engine:
 - Prevent double submission on template editor at insertion and front-end levels
@@ -491,8 +476,6 @@ Remove packages:
 - node-fetch (use global fetch)
 - twemoji (delete the plugin)
 
-Migrate [Stripe library to v7](https://github.com/stripe/stripe-node/wiki/Migration-guide-for-v7)
-
 Make it possible to embed audio like so `![Audio]({{{path}}})`
 
 Experiement with injecting script into preview sites which can postMessage to embedding page, sending html2canvas result which can be stored locally for faster loading?
@@ -639,10 +622,6 @@ Add [textbundle support](http://textbundle.org/spec/) and tell [questioner](http
 
 Document image zoom disable feature ?zoom=false and tell [questioner](https://blot.im/questions/2236)
 
-Identify accounts that pay but do not create a blog and add monitoring for this
-- There might not even be accounts Just subscriptions in stripe 
-- Investigate, then Block and autorefund these payments: they're card testers that Stripe's anti-fraud missed
-
 Add way to import directly
 - Add/fix micro.blog import to dashboard and tell [Gabriel](https://mail.google.com/mail/u/0/#inbox/FMfcgzGwJRvfgrRhXwqDNDlxbpXmRlbd]
 - And recurring import from elsewhere 
@@ -699,15 +678,6 @@ Fix bug with [header position on the blog template](https://blot.im/questions/22
   - rename from photo
 - Make 'close' button on entry permalink page of reference template work like the photo template and tell [Marco](https://mail.google.com/mail/u/0/#inbox/FMfcgzGsmNSSSRKHnlgCBllnqJCcPhxD)
 - Add [scrubbing pagination to images template](https://jsfiddle.net/tdnc28vm/1/)
-
-Re-attempt iCloud support
-- Be clear it's UNOFFICIAL
-- Fetch list of people to tell from old GH issue
-- Tell [Stew](https://mail.google.com/mail/u/0/#inbox/FMfcgzGwJSFktWWJrNvRtnSjQRbwzrJK)
-- Tell [VH](https://mail.google.com/mail/u/0/#inbox/FMfcgzGwJcdSvvFcRcjNXqvxsZDjkMQh)
-- Tell [Jacob](https://mail.google.com/mail/u/0/#inbox/FMfcgzQVwnfNnpqrWTHhgdRXwhgrTbzn)
-- Tell [Steve](https://mail.google.com/mail/u/1/#inbox/FMfcgzQXJkSHjtztvhNWNPXGdVkDhKDq)
-- Tell [Reg](https://mail.google.com/mail/u/0/#inbox/FMfcgzQXKhPKRfSsfGpXCdcxtFBhdKDt)
 
 Add pause subscription
 - Enable hibernation of blogs 
@@ -898,7 +868,6 @@ Improvements to server
 - [ ] tune performance of express-mustache in production and development
 - [ ] add optional HTML/JS/CSS minification to express-disk-cache
 - [ ] Test overdue subscription re-start
-- [ ] Disable call to stripe for every pageview on /account
 - [ ] Create blog > Dropbox > Create blog > Dropbox failed to set up properly
 - [ ] Prevent GET request to log in page from setting `connect.sid` cookie
   - [ ] or otherwise work out how to try and cache everything at nginx
@@ -1223,9 +1192,6 @@ Improvements to simple local server (npm run local):
 
 ---
 
-Improve server-side scheduled tasks:
-- Write task to identify and delete long overdue customers
-
 Fetch dimensions of images even if optimize and cache is disable, so that image zoom can work. Tell [Joshua](https://mail.google.com/mail/u/0/#inbox/FMfcgxwLsmhMtGvPcwxlSHSSTFVpJVbd)
 
 Add action to lint code with jshint and eslint
@@ -1472,38 +1438,6 @@ Switch to streaming JSON parser. There are npm modules that offer asynchronous J
 
 Add notification emails for monit events
 - Include secure one-time link to reboot the AWS instance?
-
-- If Apple releases an API, tell people who are interested in using the iCloud client
-  - [ ] [David](https://mail.google.com/mail/u/0/#inbox/FMfcgzGtwWCBwRJKJFcZXtkhBkcCcJGV)
-  - [ ] [Andrew](https://mail.google.com/mail/u/0/#inbox/FMfcgxwChJfNnhCDNsffJSjnQHnxdSfh)
-  - [ ] [Cristina](https://mail.google.com/mail/u/0/#inbox/FMfcgzGmtFHHXQKNQKppXpHGpkvLjQSD)
-  - [ ] [John](https://mail.google.com/mail/u/0/#inbox/FMfcgzGlkPcphtxgswTQccZLfQGwfWhN)
-  - [ ] [David](https://mail.google.com/mail/u/0/#inbox/FMfcgxwChJfNfSZgQqjNWLWVHZjwXQrS)
-  - [ ] [John](https://mail.google.com/mail/u/0/#inbox/FMfcgxwChJfNTrdmqJwwzCPLrhcQRNWW)
-  - [ ] [Dave](https://mail.google.com/mail/u/0/#inbox/FMfcgxwChJfNfLmTVjNGcXZVRWdlrLzp)
-  - [ ] [Shawn](https://mail.google.com/mail/u/0/#inbox/FMfcgxwChJfNfRRjzkzpvQjPTCQtqpDx)
-  - [ ] [Andrew](https://mail.google.com/mail/u/0/#inbox/FMfcgxwChJgWDpnsGBCXsCwkxRZnXMph)
-  - [ ] [Chris](https://mail.google.com/mail/u/0/#inbox/FMfcgxwC1hJjqgsvKxxVgFdbXvxNTHTsz)
-  - [ ] [Leo](https://mail.google.com/mail/u/0/#inbox/FMfcgzGqQSRJwdnCqhZNBPtRxpWlbWXv)
-  - [ ] [Kerim](https://mail.google.com/mail/u/0/#inbox/FMfcgxwChSJkptkQxlqTjsDCtdTgMWXv)
-  - [ ] [Nat](https://mail.google.com/mail/u/0/#inbox/FMfcgzGqQSTbjBLgXjSTDVCTblLhvbKr)
-  - [ ] [Wilt](https://mail.google.com/mail/u/0/#inbox/FMfcgxwChcgKzMGXdrHMVhrjsjJnnBzk)
-  - [ ] [John](https://mail.google.com/mail/u/0/#inbox/FMfcgxwDqfMPDQnSTBSsWXdtfkVdJzdD)
-  - [ ] [Arlo](https://mail.google.com/mail/u/0/#inbox/FMfcgxwJWrZRLJddkZSdrMVxrNkTZLKn)
-  - [ ] [Anders](https://mail.google.com/mail/u/0/#inbox/FMfcgxwKkRFxsDShhsHGNcdRqwHFMmJM)
-  - [ ] [Victor](https://mail.google.com/mail/u/0/#inbox/FMfcgzGkbDVrLFlwcgwDddsVPJBVKSvW)
-  - [ ] [Ken](https://mail.google.com/mail/u/0/#inbox/FMfcgzGpGdmpXpTBPzTgnrSHLMjcMGKq)
-  - [ ] [Sebastien](https://mail.google.com/mail/u/0/#inbox/FMfcgzGpGwtWnjjFvGfHLnHfRzgrcjGW)
-  - [ ] [Austin](https://mail.google.com/mail/u/0/#inbox/FMfcgzGsltKdZxhmCMXvhJjpWxkVDpTq)
-  - [ ] [Kirk](https://mail.google.com/mail/u/0/#inbox/FMfcgzGsmDsZvbQwRgRLgJVDXHDJshxK)
-  - [ ] [Ray](https://mail.google.com/mail/u/0/#inbox/FMfcgzGsmNMjKsNbfdTbXCPWGkzpxkTk)
-  - [ ] [Jan](https://mail.google.com/mail/u/0/#inbox/FMfcgzGsmXBHFvkklRwGzBwfVwfvxSGb)
-  - [ ] [Pete](https://mail.google.com/mail/u/0/#inbox/FMfcgzGtwzjcGlzctBZfjZCnJpbZrqrQ)
-  - [ ] [Noa](https://mail.google.com/mail/u/0/#inbox/FMfcgzGtxSsdCkFmHPJSZCnvgSpBFqKm)
-  - [ ] [Michael](https://mail.google.com/mail/u/0/#inbox/FMfcgzGwHLjnsCXDFckPMjJMrfDrptdD)
-  - [ ] [Eric](https://mail.google.com/mail/u/0/#inbox/FMfcgzGwHLjmmqsDpLvWDTRJMDzLMVrN)
-  - [ ] [Lex](https://mail.google.com/mail/u/0/#inbox/FMfcgzGwHLjmmpknrnmxgWWBktzlgcxF)
-  - [ ] [Aron](https://mail.google.com/mail/u/0/#inbox/FMfcgzGwHVKqlCcMrbtjnZDKNqBdhVbd)
 
 Investigate [support for xattr](https://github.com/LinusU/fs-xattr) to read image metadata on Blot? Or source for dragged images? 
 
