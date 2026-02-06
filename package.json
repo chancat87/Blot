@@ -8,6 +8,7 @@
     "download-folder": "./scripts/development/download-folder.sh",
     "test": "./scripts/tests/invoke.sh",
     "start": "./scripts/development/start.sh",
+    "debug": "DEBUG=blot* ./scripts/development/start.sh",
     "deploy-node": "node scripts/deploy",
     "deploy-macserver": "./scripts/macserver/deploy.sh",
     "deploy-localmacserver": "./scripts/macserver/local-deploy.sh",
