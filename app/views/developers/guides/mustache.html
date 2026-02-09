@@ -104,7 +104,7 @@ value of the key in the current context.</p>
 
 <p>The behavior of the section is determined by the value of the key.</p>
 
-<p><strong>False Values or Empty Lists</strong></p>
+<h4>False values or empty lists</h4>
 
 <p>If the <code>person</code> key exists and has a value of false or an empty
 list, the HTML between the pound and slash will not be displayed.</p>
@@ -129,7 +129,7 @@ list, the HTML between the pound and slash will not be displayed.</p>
 <small><pre><code>Shown.
 </code></pre></small>
 
-<p><strong>Non-Empty Lists</strong></p>
+<h4>Non-empty lists</h4>
 
 <p>If the <code>person</code> key exists and has a non-false value, the HTML between
 the pound and slash will be rendered and displayed one or more times.</p>
@@ -165,7 +165,7 @@ loop over collections.</p>
 &lt;b&gt;rip&lt;/b&gt;
 </code></pre></small>
 
-<p><strong>Lambdas</strong></p>
+<h4>Lambdas</h4>
 
 <p>When the value is a callable object, such as a function or lambda, the
 object will be invoked and passed the block of text. The text passed
@@ -197,7 +197,7 @@ filters or caching.</p>
 <small><pre><code>&lt;b&gt;Willy is awesome.&lt;/b&gt;
 </code></pre></small>
 
-<p><strong>Non-False Values</strong></p>
+<h4>Non-false values</h4>
 
 <p>When the value is non-false but not a list, it will be used as the
 context for a single rendering of the block.</p>

@@ -50,7 +50,7 @@
 
 <p>Minimal example:</p>
 
-<pre class="code"><code>{{#thumbnail.medium}}
+<pre class="html"><code>{{#thumbnail.medium}}
   &lt;img
     src="{{{thumbnail.medium.url}}}"
     width="{{thumbnail.medium.width}}"
@@ -62,7 +62,7 @@
 
 <p>Without the block guard, you can reference the properties directly (but the template will break on entries without thumbnails):</p>
 
-<pre class="code"><code>&lt;img
+<pre class="html"><code>&lt;img
   src="{{{thumbnail.medium.url}}}"
   width="{{thumbnail.medium.width}}"
   height="{{thumbnail.medium.height}}"

@@ -1,89 +1,80 @@
 {{=[[ ]]=}}
 
-1. Getting the source
+<h1>Converting the Jekyll theme</h1>
 
-2. Convert the _config.yml file using an online converter.
+<p>Checklist for converting a Jekyll theme (e.g. Minima) to Blot after you’ve done the initial setup in <a href="/developers/guides/convert-jekyll-template">Convert a Jekyll template to Blot</a>.</p>
 
-- map "paginate" integer to "page_size"
+<h2>1. Getting the source</h2>
 
-3. Move files in '_includes' to root directory, add an underscore at the start of their name.
+<p>Download the theme from GitHub and unzip (or clone) as in the main guide.</p>
 
-4. Move layouts/default.html to entries.html
+<h2>2. Convert the _config.yml file</h2>
 
-5. Move layouts/post.html to entry.html
+<p>Use an online converter to map Jekyll config to Blot’s <code>package.json</code>.</p>
 
-6. Convert any sass into CSS, merge all CSS into a file 'style.css' in root directory.
+<ul>
+  <li>Map <code>paginate</code> integer to <code>page_size</code>.</li>
+</ul>
 
-7. Find and replace partials syntax:
+<h2>3. Move files in _includes to root</h2>
 
-  {% include navigation.html %} --> {{> navigation}}
+<p>Move files in <code>_includes</code> to the template root directory and add an underscore at the start of their name if your template expects that convention.</p>
 
-  Regex:
-  
-  \{\% include (.*)\.html \%\}
+<h2>4. Rename default layout to entries.html</h2>
 
-  {{> $1}}
+<p>Move <code>layouts/default.html</code> to <code>entries.html</code> (Blot’s homepage view).</p>
 
-8. Fix pagination:
+<h2>5. Rename post layout to entry.html</h2>
 
-```
-<nav id="post-nav">
-  {% if paginator.previous_page %}
-  <span class="prev">
-    {% if paginator.previous_page == 1 %}
-    <a href="{{ "/" | relative_url  }}" title="Previous Page">
-      <span class="arrow">←</span> Newer Posts
-    </a>
-    {% else %}
-    <a href="{{ paginator.previous_page_path }}">
-      <span class="arrow">←</span> Newer Posts
-    </a>
-    {% endif %}
-  </span>
-  {% endif %}
-{% if paginator.next_page %}
-<span class="next">
-  <a href="{{ paginator.next_page_path }}">
-    Older Posts <span class="arrow">→</span>
-  </a>
-</span>
-{% endif %}
-</nav>
-```
+<p>Move <code>layouts/post.html</code> to <code>entry.html</code> (Blot’s single-post view).</p>
 
-to:
+<h2>6. Compile Sass and merge CSS</h2>
 
-```
-{{#pagination}}
-<nav id="post-nav">
+<p>Convert any Sass/SCSS into plain CSS and merge into a single <code>style.css</code> in the template root.</p>
+
+<h2>7. Find and replace partials syntax</h2>
+
+<pre class="code"><code>{% include navigation.html %} --&gt; {{> navigation}}
+
+Regex:
+\{\% include (.*)\.html \%\}
+{{> $1}}</code></pre>
+
+<p>Use the regex above in your editor to replace Jekyll includes with Mustache partials.</p>
+
+<h2>8. Fix pagination</h2>
+
+<p>Replace Jekyll paginator logic with Blot’s <code>{{#pagination}}</code> section:</p>
+
+<pre class="code html"><code>&lt;nav id="post-nav"&gt;
+  {% if paginator.previous_page %}...&lt;/nav&gt;</code></pre>
+
+<p>becomes:</p>
+
+<pre class="code html"><code>{{#pagination}}
+&lt;nav id="post-nav"&gt;
   {{#previous}}
-  <span class="prev">
-    <a href="/page/{{previous}}" title="Previous Page">
-      <span class="arrow">←</span> Newer Posts
-  </a>
-  </span>
+  &lt;span class="prev"&gt;
+    &lt;a href="/page/{{previous}}" title="Previous Page"&gt;
+      &lt;span class="arrow"&gt;←&lt;/span&gt; Newer Posts
+    &lt;/a&gt;
+  &lt;/span&gt;
   {{/previous}}
   {{#next}}
-  <span class="next">
-  <a href="/page/{{next}}">
-    Older Posts <span class="arrow">→</span>
-  </a>
-  </span>
+  &lt;span class="next"&gt;
+    &lt;a href="/page/{{next}}"&gt;
+      Older Posts &lt;span class="arrow"&gt;→&lt;/span&gt;
+    &lt;/a&gt;
+  &lt;/span&gt;
   {{/next}}
-</nav>
-{{/pagination}}
-```
+&lt;/nav&gt;
+{{/pagination}}</code></pre>
 
-9. Fix menu links:
+<h2>9. Fix menu links</h2>
 
-```
-<nav class="main-nav">
-  {% if page.url != "/" %}
-  <a class="normal" href="{{ "/" | relative_url  }}"> <span class="arrow">←</span> Home</a>
-  {% endif %}
-  {% if page.url != "/about/" %}
-  <a href="{{ "/" | relative_url  }}about">About</a>
-  {% endif %}
-  <a class="cta" href="https://micro.blog/{{ site.microblog_user }}" rel="me">Also on Micro.blog</a>
-</nav>
-```
+<p>Replace Jekyll’s <code>page.url</code> and <code>site</code> with Blot’s view context (e.g. <code>{{url}}</code>, <code>{{#entry}}</code>). Example:</p>
+
+<pre class="code html"><code>&lt;nav class="main-nav"&gt;
+  {{^index}}&lt;a href="/"&gt;&lt;span class="arrow"&gt;←&lt;/span&gt; Home&lt;/a&gt;{{/index}}
+  &lt;a href="/about"&gt;About&lt;/a&gt;
+&lt;/nav&gt;</code></pre>
