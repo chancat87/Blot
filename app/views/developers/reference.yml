@@ -401,7 +401,7 @@
       example: |
         {{#absoluteURLs}}
         {{{html}}}
-        {{/absoluteURLs
+        {{/absoluteURLs}}
 
     - name: encodeJSON
       type: function
