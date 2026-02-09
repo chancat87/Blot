@@ -1,0 +1,113 @@
+{{=[[ ]]=}}
+
+<h1>Thumbnails</h1>
+
+<p>This guide explains how Blot selects, builds, and exposes thumbnails for your entries.</p>
+
+<h2>How Blot selects a thumbnail</h2>
+
+<p>Blot builds a list of thumbnail candidates in a strict order:<sup>1</sup></p>
+
+<ol>
+  <li><code>metadata.thumbnail</code> if present.</li>
+  <li>Images in the post HTML in document order.</li>
+  <li>Video thumbnails from Vimeo or YouTube embeds.</li>
+</ol>
+
+<p>Blot iterates those candidates in order and stops at the first one that yields valid thumbnails.<sup>1</sup></p>
+
+<p>A valid thumbnail must be at least 64×64 and in a supported format (<code>png</code>, <code>jpeg</code>, <code>jpg</code>, <code>svg</code>, <code>gif</code>, <code>webp</code>) or they are ignored.<sup>3</sup></p>
+
+<h2>How thumbnail sizes work (including small images)</h2>
+
+<p>Blot generates four sizes:</p>
+
+<ul>
+  <li><strong>small</strong>: 160px</li>
+  <li><strong>medium</strong>: 640px</li>
+  <li><strong>large</strong>: 1200px</li>
+  <li><strong>square</strong>: 160px (cropped)</li>
+</ul>
+
+<p>When images are resized, Blot never increases the dimensions of the image.<sup>2</sup></p>
+
+<h2>How to override the thumbnail</h2>
+
+<p>Set the <code>Thumbnail</code> metadata field to a path to an image in your folder or a full URL. Blot resolves the path as a dependency.<sup>4</sup></p>
+
+<pre class="text"><code>Thumbnail: ./images/cover.jpg</code></pre>
+
+<h2>How to use the thumbnail object in templates</h2>
+
+<p>Each entry exposes a <code>thumbnail</code> object with <code>small</code>, <code>medium</code>, <code>large</code>, and <code>square</code> variants. Each variant includes a <code>url</code>, <code>width</code>, and <code>height</code>.<sup>6</sup></p>
+
+<pre class="code html"><code>&lt;img src="{{{thumbnail.medium.url}}}"
+     width="{{thumbnail.medium.width}}"
+     height="{{thumbnail.medium.height}}"&gt;
+</code></pre>
+
+<pre class="code html"><code>{{#thumbnail.medium}}
+  &lt;img src="{{{thumbnail.medium.url}}}"
+       width="{{thumbnail.medium.width}}"
+       height="{{thumbnail.medium.height}}"&gt;
+{{/thumbnail.medium}}
+</code></pre>
+
+<h2>Responsive images with 3 → 2 → 1 columns</h2>
+
+<p>Blot’s album grid template uses <code>srcset</code> and <code>sizes</code> with the <code>thumbnail</code> widths to let the browser pick the right image.<sup>7</sup> Below is a compact example for a three-column grid that collapses to two and then one. The <code>sizes</code> values should match your breakpoints.</p>
+
+<pre class="code html"><code>&lt;style&gt;
+.grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+&lt;/style&gt;
+
+&lt;div class="grid"&gt;
+  {{#entries}}
+  {{#thumbnail.medium}}
+  &lt;figure&gt;
+    &lt;img
+      src="{{{thumbnail.large.url}}}"
+      srcset="{{{thumbnail.small.url}}} {{thumbnail.small.width}}w,
+              {{{thumbnail.medium.url}}} {{thumbnail.medium.width}}w,
+              {{{thumbnail.large.url}}} {{thumbnail.large.width}}w"
+      sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
+      width="{{thumbnail.medium.width}}"
+      height="{{thumbnail.medium.height}}"
+      alt="{{title}}"
+    &gt;
+  &lt;/figure&gt;
+  {{/thumbnail.medium}}
+  {{/entries}}
+&lt;/div&gt;
+</code></pre>
+
+<p>In this example, <code>sizes</code> reports one column below 600px, two columns up to 900px, and three columns above 900px. Keep the <code>sizes</code> values in sync with your CSS grid so the browser chooses the correct thumbnail width.</p>
+
+<h2>Sources</h2>
+<ol>
+  <li>Thumbnail candidates and selection order: <code>app/build/thumbnail/candidates.js</code>, <code>app/build/thumbnail/index.js</code>.</li>
+  <li>Thumbnail transformations and no-upscaling behavior: <code>app/build/thumbnail/transform.js</code>.</li>
+  <li>Thumbnail validation rules and supported formats: <code>app/build/thumbnail/validate.js</code>, <code>app/build/thumbnail/config.js</code>.</li>
+  <li>Thumbnail metadata guidance: <code>app/views/how/metadata.html</code>.</li>
+  <li>Dependency resolution for thumbnail metadata paths: <code>app/build/dependencies/index.js</code>.</li>
+  <li>Template reference for the thumbnail object: <code>app/views/developers/reference.yml</code>.</li>
+  <li>Example usage of <code>srcset</code> and <code>sizes</code> in a grid template: <code>app/templates/source/album/_grid_bookshelf.html</code>.</li>
+</ol>
+
+[[={{ }}=]]
