@@ -251,7 +251,7 @@
 
     - name: summary
       type: string
-      description: The text of the ﬁrst paragraph of the entry.
+      description: Plain text extracted from the rendered content (excluding headings, block code, and similar elements), with whitespace normalized and truncated to ~150 characters.
 
     - name: titleTag
       type: string
