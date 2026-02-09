@@ -2,7 +2,7 @@
 
 <h1>Thumbnails</h1>
 
-<p>This guide explains how Blot selects, builds, and exposes thumbnails for your entries.</p>
+<p>This guide explains how Blot selects, builds, and exposes thumbnails for your entries. Use it when building index pages, entry cards, image grids, or when you need thumbnails for social previews.</p>
 
 <h2>How Blot selects a thumbnail</h2>
 
@@ -22,35 +22,51 @@
 
 <p>Blot generates four sizes:</p>
 
-<ul>
-  <li><strong>small</strong>: 160px</li>
-  <li><strong>medium</strong>: 640px</li>
-  <li><strong>large</strong>: 1200px</li>
-  <li><strong>square</strong>: 160px (cropped)</li>
-</ul>
+<table>
+  <thead>
+    <tr><th>Size</th><th>Width</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>small</td><td>160px</td><td>—</td></tr>
+    <tr><td>medium</td><td>640px</td><td>—</td></tr>
+    <tr><td>large</td><td>1200px</td><td>—</td></tr>
+    <tr><td>square</td><td>160px</td><td>cropped</td></tr>
+  </tbody>
+</table>
 
 <p>When images are resized, Blot never increases the dimensions of the image.<sup>2</sup></p>
 
 <h2>How to override the thumbnail</h2>
 
-<p>Set the <code>Thumbnail</code> metadata field to a path to an image in your folder or a full URL. Blot resolves the path as a dependency.<sup>4</sup></p>
+<p>Set the <code>Thumbnail</code> <a href="/how/metadata">metadata</a> field to a path to an image in your folder or a full URL. Blot resolves the path as a dependency.<sup>4</sup></p>
 
 <pre class="text"><code>Thumbnail: ./images/cover.jpg</code></pre>
 
 <h2>How to use the thumbnail object in templates</h2>
 
-<p>Each entry exposes a <code>thumbnail</code> object with <code>small</code>, <code>medium</code>, <code>large</code>, and <code>square</code> variants. Each variant includes a <code>url</code>, <code>width</code>, and <code>height</code>.<sup>6</sup></p>
+<p>Each entry exposes a <code>thumbnail</code> object (see the <a href="/developers/reference#entry">entry reference</a>) with <code>small</code>, <code>medium</code>, <code>large</code>, and <code>square</code> variants. Each variant includes a <code>url</code>, <code>width</code>, and <code>height</code>.<sup>6</sup></p>
 
-<pre class="code html"><code>&lt;img src="{{{thumbnail.medium.url}}}"
-     width="{{thumbnail.medium.width}}"
-     height="{{thumbnail.medium.height}}"&gt;
+<p>Entries with no valid thumbnail candidate have no <code>thumbnail</code> (or it is empty). Guard with <code>{{#thumbnail.medium}}</code> and <code>{{^thumbnail.medium}}</code> so you avoid broken images and can show fallback UI when there is no thumbnail.</p>
+
+<p>Minimal example:</p>
+
+<pre><code>{{#thumbnail.medium}}
+  &lt;img
+    src="{{{thumbnail.medium.url}}}"
+    width="{{thumbnail.medium.width}}"
+    height="{{thumbnail.medium.height}}"
+    alt="{{title}}"
+  &gt;
+{{/thumbnail.medium}}
 </code></pre>
 
-<pre class="code html"><code>{{#thumbnail.medium}}
-  &lt;img src="{{{thumbnail.medium.url}}}"
-       width="{{thumbnail.medium.width}}"
-       height="{{thumbnail.medium.height}}"&gt;
-{{/thumbnail.medium}}
+<p>Without the block guard, you can reference the properties directly (but the template will break on entries without thumbnails):</p>
+
+<pre><code>&lt;img
+  src="{{{thumbnail.medium.url}}}"
+  width="{{thumbnail.medium.width}}"
+  height="{{thumbnail.medium.height}}"
+&gt;
 </code></pre>
 
 <h2>Responsive images with 3 → 2 → 1 columns</h2>
@@ -83,9 +99,11 @@
   &lt;figure&gt;
     &lt;img
       src="{{{thumbnail.large.url}}}"
-      srcset="{{{thumbnail.small.url}}} {{thumbnail.small.width}}w,
-              {{{thumbnail.medium.url}}} {{thumbnail.medium.width}}w,
-              {{{thumbnail.large.url}}} {{thumbnail.large.width}}w"
+      srcset="
+        {{{thumbnail.small.url}}} {{thumbnail.small.width}}w,
+        {{{thumbnail.medium.url}}} {{thumbnail.medium.width}}w,
+        {{{thumbnail.large.url}}} {{thumbnail.large.width}}w
+      "
       sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
       width="{{thumbnail.medium.width}}"
       height="{{thumbnail.medium.height}}"
@@ -99,7 +117,7 @@
 
 <p>In this example, <code>sizes</code> reports one column below 600px, two columns up to 900px, and three columns above 900px. Keep the <code>sizes</code> values in sync with your CSS grid so the browser chooses the correct thumbnail width.</p>
 
-<h2>Sources</h2>
+<h2>Implementation reference</h2>
 <ol>
   <li>Thumbnail candidates and selection order: <code>app/build/thumbnail/candidates.js</code>, <code>app/build/thumbnail/index.js</code>.</li>
   <li>Thumbnail transformations and no-upscaling behavior: <code>app/build/thumbnail/transform.js</code>.</li>
