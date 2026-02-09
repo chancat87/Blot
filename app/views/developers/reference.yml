@@ -103,7 +103,7 @@
 
     - name: url
       type: string
-      description: The URL to the post
+      description: The resolved, unique URL to the post.
 
     - name: tags
       type: array
@@ -275,11 +275,11 @@
 
     - name: slug
       type: string
-      description: The value of the metadata property permalink. Same as URL.
+      description: A slug derived from the title or path, which may be used to build the permalink.
 
     - name: permalink
       type: string
-      description: The value of the metadata property permalink. Same as URL.
+      description: The requested, format-based permalink candidate before it is resolved to the final URL.
 
     - name: index
       type: number
