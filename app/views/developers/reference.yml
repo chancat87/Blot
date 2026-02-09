@@ -139,7 +139,7 @@
 
     - name: date
       type: string
-      description: The blog post’s publication date, as a human-readable string
+      description: The blog post’s publication date, as a human-readable string. This is only present when `hide_dates` is false and the entry is not a menu item or page. Use [formatDate](#entry.formatDate) for custom formatting regardless of display settings.
 
     - name: dateStamp
       type: number
