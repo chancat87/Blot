@@ -10,6 +10,7 @@ require('./examples.js');
 require('./multi-lingual-code.js');
 
 require('./copy-buttons.js');
+require('./code-copy-buttons.js');
 
 const tocbot = require('tocbot');
 

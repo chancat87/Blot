@@ -1,8 +1,8 @@
-- name: blog
+- name: Site properties
   keys:
     - name: title
       type: string
-      description: Your site’s title, set on the title page of your dashboard. Blog properties are available at the top level of the Mustache context (use `{{title}}`, not `{{blog.title}}`).
+      description: Your site’s title, set on the title page of your dashboard. 
       example: <h1>{{title}}</h1>
 
     - name: avatar
@@ -79,7 +79,7 @@
       type: boolean
       description: true if you’ve indicated your avatar is round, false if not
 
-- name: entry
+- name: Entry properties
   keys:
     - name: id
       type: string

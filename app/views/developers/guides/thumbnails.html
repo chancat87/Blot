@@ -4,27 +4,38 @@
 
 <p>This guide explains how Blot selects, builds, and exposes thumbnails for your entries. Use it when building index pages, entry cards, image grids, or when you need thumbnails for social previews.</p>
 
-<h2>How Blot selects a thumbnail</h2>
+<h2>Which image is used as a thumbnail?</h2>
 
-<p>Blot builds a list of thumbnail candidates in a strict order:<sup>1</sup></p>
+<p>Blot builds a list of candidate images in a strict order:<sup>1</sup></p>
 
+<div class="steps">
 <ol>
-  <li><code>metadata.thumbnail</code> if present.</li>
-  <li>Images in the post HTML in document order.</li>
+  <li><code>Thumbnail</code> <a href="/how/metadata#thumbnail">metadata</a> if present.</li>
+  <li>Images in the HTML generated from the file in document order.</li>
   <li>Video thumbnails from Vimeo or YouTube embeds.</li>
 </ol>
+</div>
 
-<p>Blot iterates those candidates in order and stops at the first one that yields valid thumbnails.<sup>1</sup></p>
+<p>Blot iterates those candidates in order and stops at the first one with the following properties:</p>
+<ul>
+  <li>At least 64×64 pixels in size</li>
+  <li>In a supported format: <code>png</code>, <code>jpeg</code>, <code>jpg</code>, <code>svg</code>, <code>gif</code>, or <code>webp</code></li>
+</ul>
 
-<p>A valid thumbnail must be at least 64×64 and in a supported format (<code>png</code>, <code>jpeg</code>, <code>jpg</code>, <code>svg</code>, <code>gif</code>, <code>webp</code>) or they are ignored.<sup>3</sup></p>
+<h2>How to override the thumbnail</h2>
 
-<h2>How thumbnail sizes work (including small images)</h2>
+<p>If you are not happy with the image selected by default, you can set the <code>Thumbnail</code> <a href="/how/metadata">metadata</a> field to a path to an image in your folder or a full URL.</p>
 
-<p>Blot generates four sizes:</p>
+<pre class="text"><code>Thumbnail: ./cover.jpg</code></pre>
+
+
+<h2>Thumbnail sizes</h2>
+
+<p>If there is an image that meets the criteria, Blot generates four sizes of thumbnail:</p>
 
 <table>
   <thead>
-    <tr><th>Size</th><th>Width</th><th>Notes</th></tr>
+    <tr><th>Size</th><th>Max width and height</th><th>Notes</th></tr>
   </thead>
   <tbody>
     <tr><td>small</td><td>160px</td><td>—</td></tr>
@@ -36,45 +47,77 @@
 
 <p>When images are resized, Blot never increases the dimensions of the image.<sup>2</sup></p>
 
-<h2>How to override the thumbnail</h2>
-
-<p>Set the <code>Thumbnail</code> <a href="/how/metadata">metadata</a> field to a path to an image in your folder or a full URL. Blot resolves the path as a dependency.<sup>4</sup></p>
-
-<pre class="text"><code>Thumbnail: ./images/cover.jpg</code></pre>
-
 <h2>How to use the thumbnail object in templates</h2>
 
 <p>Each entry exposes a <code>thumbnail</code> object (see the <a href="/developers/reference#entry">entry reference</a>) with <code>small</code>, <code>medium</code>, <code>large</code>, and <code>square</code> variants. Each variant includes a <code>url</code>, <code>width</code>, and <code>height</code>.<sup>6</sup></p>
 
-<p>Entries with no valid thumbnail candidate have no <code>thumbnail</code> (or it is empty). Guard with <code>{{#thumbnail.medium}}</code> and <code>{{^thumbnail.medium}}</code> so you avoid broken images and can show fallback UI when there is no thumbnail.</p>
-
 <p>Minimal example:</p>
 
-<pre class="html"><code>{{#thumbnail.medium}}
-  &lt;img
-    src="{{{thumbnail.medium.url}}}"
-    width="{{thumbnail.medium.width}}"
-    height="{{thumbnail.medium.height}}"
-    alt="{{title}}"
+<pre class="html" data-file="template.html"><code>{{#entry}}
+  {{#thumbnail.medium}}
+    &lt;img src="{{{url}}}"
+      width="{{width}}"
+      height="{{height}}"
+      alt="{{title}}"
+    &gt;
+  {{/thumbnail.medium}}
+{{/entry}}
+</code></pre>
+<pre class="json"><code>{
+  "entry": {
+    title: "Your title here",
+    thumbnail: {
+      medium: {
+        url: "https://cdn.blot.im/path/to/image.jpg",
+        width: 640,
+        height: 425
+      }
+    }
+  }
+}
+</code></pre>
+<pre class="html output"><code>&lt;img
+    src="https://cdn.blot.im/path/to/image.jpg"
+    width="640"
+    height="425"
+    alt="Your title here"
   &gt;
-{{/thumbnail.medium}}
 </code></pre>
 
-<p>Without the block guard, you can reference the properties directly (but the template will break on entries without thumbnails):</p>
+<div class="guide-callout guide-callout--warning">
+  <p>Guard with <code>{{#thumbnail.medium}}</code> and <code>{{^thumbnail.medium}}</code> so you avoid broken images and can show fallback UI when there is no thumbnail.</p></div>
 
-<pre class="html"><code>&lt;img
-  src="{{{thumbnail.medium.url}}}"
-  width="{{thumbnail.medium.width}}"
-  height="{{thumbnail.medium.height}}"
-&gt;
-</code></pre>
 
-<h2>Responsive images with 3 → 2 → 1 columns</h2>
+<h2>Responsive thumbnails</h2>
 
 <p>Blot’s album grid template uses <code>srcset</code> and <code>sizes</code> with the <code>thumbnail</code> widths to let the browser pick the right image.<sup>7</sup> Below is a compact example for a three-column grid that collapses to two and then one. The <code>sizes</code> values should match your breakpoints.</p>
 
-<pre class="html"><code>&lt;style&gt;
-.grid {
+<pre class="html" data-file="entries.html"><code>&lt;div class="grid"&gt;
+  {{#entries}}
+  {{#thumbnail.medium}}
+  &lt;figure&gt;
+    &lt;img
+      src="{{{thumbnail.large.url}}}"
+      srcset="
+        {{{thumbnail.small.url}}} {{thumbnail.small.width}}w,
+        {{{thumbnail.medium.url}}} {{thumbnail.medium.width}}w,
+        {{{thumbnail.large.url}}} {{thumbnail.large.width}}w
+      "
+      sizes="
+        (max-width: 600px) 100vw,
+        (max-width: 900px) 50vw,
+        33vw
+      "
+      width="{{thumbnail.medium.width}}"
+      height="{{thumbnail.medium.height}}"
+      alt="{{title}}"
+    &gt;
+  &lt;/figure&gt;
+  {{/thumbnail.medium}}
+  {{/entries}}
+&lt;/div&gt;</code></pre>
+
+<pre class="css" data-file="style.css"><code>.grid {
   display: grid;
   gap: 1.5rem;
   grid-template-columns: repeat(3, 1fr);
@@ -91,33 +134,13 @@
     grid-template-columns: 1fr;
   }
 }
-&lt;/style&gt;
-
-&lt;div class="grid"&gt;
-  {{#entries}}
-  {{#thumbnail.medium}}
-  &lt;figure&gt;
-    &lt;img
-      src="{{{thumbnail.large.url}}}"
-      srcset="
-        {{{thumbnail.small.url}}} {{thumbnail.small.width}}w,
-        {{{thumbnail.medium.url}}} {{thumbnail.medium.width}}w,
-        {{{thumbnail.large.url}}} {{thumbnail.large.width}}w
-      "
-      sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
-      width="{{thumbnail.medium.width}}"
-      height="{{thumbnail.medium.height}}"
-      alt="{{title}}"
-    &gt;
-  &lt;/figure&gt;
-  {{/thumbnail.medium}}
-  {{/entries}}
-&lt;/div&gt;
 </code></pre>
 
 <p>In this example, <code>sizes</code> reports one column below 600px, two columns up to 900px, and three columns above 900px. Keep the <code>sizes</code> values in sync with your CSS grid so the browser chooses the correct thumbnail width.</p>
 
-<h2>Implementation reference</h2>
+<div class="guide-faq">
+<details>
+<summary>Implementation reference</summary>
 <ol>
   <li>Thumbnail candidates and selection order: <code>app/build/thumbnail/candidates.js</code>, <code>app/build/thumbnail/index.js</code>.</li>
   <li>Thumbnail transformations and no-upscaling behavior: <code>app/build/thumbnail/transform.js</code>.</li>
@@ -127,5 +150,7 @@
   <li>Template reference for the thumbnail object: <code>app/views/developers/reference.yml</code>.</li>
   <li>Example usage of <code>srcset</code> and <code>sizes</code> in a grid template: <code>app/templates/source/album/_grid_bookshelf.html</code>.</li>
 </ol>
+</details>
+</div>
 
 [[={{ }}=]]

@@ -46,12 +46,12 @@ Regex:
 
 <p>Replace Jekyll paginator logic with Blot’s <code>{{#pagination}}</code> section:</p>
 
-<pre class="code html"><code>&lt;nav id="post-nav"&gt;
+<pre class="html"><code>&lt;nav id="post-nav"&gt;
   {% if paginator.previous_page %}...&lt;/nav&gt;</code></pre>
 
 <p>becomes:</p>
 
-<pre class="code html"><code>{{#pagination}}
+<pre class="html"><code>{{#pagination}}
 &lt;nav id="post-nav"&gt;
   {{#previous}}
   &lt;span class="prev"&gt;
@@ -74,7 +74,7 @@ Regex:
 
 <p>Replace Jekyll’s <code>page.url</code> and <code>site</code> with Blot’s view context (e.g. <code>{{url}}</code>, <code>{{#entry}}</code>). Example:</p>
 
-<pre class="code html"><code>&lt;nav class="main-nav"&gt;
+<pre class="html"><code>&lt;nav class="main-nav"&gt;
   {{^index}}&lt;a href="/"&gt;&lt;span class="arrow"&gt;←&lt;/span&gt; Home&lt;/a&gt;{{/index}}
   &lt;a href="/about"&gt;About&lt;/a&gt;
 &lt;/nav&gt;</code></pre>

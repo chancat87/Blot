@@ -2,17 +2,16 @@
 
 <h1>Working with AI</h1>
 
-<p>You can help AI assistants (such as Cursor or Claude) work more effectively on your Blot template by adding an <code>AGENTS.md</code> file to your template directory. This file describes the template’s structure, constraints, and conventions so the assistant stays within the right scope and follows Blot’s rules.</p>
+<p>You can help AI assistants work more effectively on your Blot template by adding an <code>AGENTS.md</code> file to your template directory. This file describes the template’s structure, constraints, and conventions to guide the assistant.</p>
 
 <h2>Example AGENTS.md</h2>
 
 <p>Below is an example <code>AGENTS.md</code> for a blog template. You can adapt it for your own template.</p>
 
-<pre class="text"><code># Blot template: Blog
+<pre class="md" data-file="AGENTS.md"><code># Blot template
 
-This directory is a **Blot template** (Mustache views + static assets).  
-Work only on template behavior and presentation (HTML/CSS/JS + template config).  
-Do **not** modify Blot server code unless explicitly requested.
+This directory is a **Blot template**.
+It contains Mustache views and template configuration.
 
 ## What this template contains
 
@@ -23,7 +22,7 @@ Do **not** modify Blot server code unless explicitly requested.
 - `entry.html` — single entry/post view
 - `archives.html` — archives listing view (commonly routed to `/archives`)
 - Optional view(s): search page, RSS/Atom feed, sitemap (names/routes defined in `package.json`)
-- `style.css` — main stylesheet (plain CSS; no SCSS compilation)
+- `style.css` — main stylesheet (plain CSS)
 - `script.js` — optional client-side behavior (keep lightweight)
 
 If you are unsure which view maps to which URL, open `package.json` and check `views[*].url`.
@@ -32,8 +31,7 @@ If you are unsure which view maps to which URL, open `package.json` and check `v
 
 - Templates are **Mustache**.
   - Variables are HTML-escaped by default.
-  - Use triple-braces only for trusted HTML produced by Blot (e.g., rendered entry content).
-- Prefer sections / inverted sections instead of "logic".
+  - Use triple-braces to bypass HTML escaping, typical for `{{{url}}}` or `{{{path}}}`, which contain slashes, and for rendered entry content like `{{{body}}}` and `{{{html}}}`.
 - Partials:
   - File partials: `{{> header}}` includes `header.html` (if present) and inherits context.
   - Per-view string partials: from `package.json` under `views[view].partials`, included as `{{> title}}`, etc.
@@ -46,31 +44,13 @@ If you are unsure which view maps to which URL, open `package.json` and check `v
 - The blog routes templates before serving static files. Avoid adding a view whose `url`
   conflicts with an existing post/page path unless that's intentional.
 - Avoid view-name collisions:
-  - Do not create two views with the same basename (e.g., `feed.xml` and `feed.rss`) if possible.
+  - Do not create two views with the same basename (e.g., `feed.xml` and `feed.rss`).
 
-## Edit and test loop (no unit tests)
+## Edit and test loop
 
-### On a hosted Blot site
+On a hosted Blot site
 - Use `?debug=true` (or `?json=true` on some installs) on any page to inspect the exact JSON context used for rendering.
-- Make a change, reload the page, and verify HTML output and CSS/JS asset URLs.
-
-### Local full-stack testing (optional)
-- Run Blot locally and use the example site to render the template end-to-end.
-  (See Blot developer docs for Docker + `npm start` and the `https://example.localhost` test site.)
-
-## Dashboards controls via `locals` naming
-
-When adding new `locals` in `package.json`, prefer established naming conventions so Blot can
-generate dashboard controls automatically:
-
-- `*_color` -&gt; color picker
-- `font` or `*_font` -&gt; font picker (except `syntax_highlighter_font`)
-- `*_url` -&gt; upload control
-- `navigation_*` / `*_navigation` -&gt; navigation options group
-- `date_display` + `hide_dates` -&gt; date format + toggle
-- `syntax_highlighter` (+ optional `syntax_highlighter_font`) -&gt; syntax theme controls
-
-Do not rename existing `locals` lightly: it can break existing template settings.
+- Make a change, wait for it to sync, reload the page, and verify HTML output and CSS/JS asset URLs.
 
 ## Output expectations
 

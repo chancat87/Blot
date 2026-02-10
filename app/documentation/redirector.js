@@ -72,6 +72,8 @@ const internal = {
     "/developers/guides/convert-jekyll-template/converting-jekyll-theme",
   "/developers/tutorials/set-up-development-environment":
     "/developers/guides/set-up-development-environment",
+  "/developers/guides/set-up-development-environment": 
+    "/developers/guides/run-blot-locally",
   "/templates/developers/tutorials/custom-metadata": "/developers/guides/custom-metadata",
   "/templates/developers": "/developers",
   "/how/guides": "/how/posts",
