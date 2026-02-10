@@ -4,7 +4,7 @@
 
 <p>Tips for debugging templates and understanding what Blot is passing to your views.</p>
 
-<h2>Inspect the data with <code>?json=true</code></h2>
+<h2>Inspect the data</h2>
 
 <p>Append <code>?json=true</code> to any page URL on your blog (e.g. <code>https://yourhandle.blot.im/</code> or <code>https://yourhandle.blot.im/some-post</code>). Blot will respond with the exact JSON context used to render that page—the same object your Mustache template receives as <code>res.locals</code>—instead of the rendered HTML.</p>
 
@@ -14,8 +14,6 @@
   <li>Check the shape of nested data (e.g. <code>thumbnail.medium.url</code>, <code>metadata</code>).</li>
   <li>Confirm that the data you expect is present before writing or debugging a view.</li>
 </ul>
-
-<p>On some installs the same behavior is available with <code>?debug=true</code>. The response is not cached.</p>
 
 <h2>See template errors on the preview subdomain</h2>
 
@@ -31,13 +29,9 @@
 
 <p>Your live site is never shown these template errors; only the preview subdomain surfaces them.</p>
 
-<h2>Other tips</h2>
+<h2>Getting help</h2>
 
-<ul>
-  <li><strong>Guard optional data.</strong> Not every entry has a thumbnail, custom metadata, or tags. Use sections like <code>{{#thumbnail.medium}}</code> and <code>{{^thumbnail.medium}}</code> so missing data doesn’t produce broken markup or missing fallback UI. See the <a href="/developers/guides/thumbnails">Thumbnails</a> guide.</li>
-  <li><strong>Check the reference.</strong> Property names and structure are documented in the <a href="/developers/reference">Reference</a>. Use it to confirm correct paths (e.g. <code>entry.title</code>, <code>blog.title</code>).</li>
-  <li><strong>Run Blot locally (optional).</strong> For deeper debugging you can run Blot on your machine and use the example site to render your template end-to-end. See <a href="/developers/guides/set-up-development-environment">Set up a local development environment</a>.</li>
-  <li><strong>Contact support.</strong> If you’re stuck, <a href="/support">get in touch</a> or post in <a href="/questions">Questions</a> so others can benefit from the answer.</li>
-</ul>
+<p>You are always welcome to <a href="/support">contact us</a> with your questions. If there's a chance your question might be useful to other template developers, feel free to post it in <a href="/questions">Questions</a>.</p>
+
 
 [[={{ }}=]]

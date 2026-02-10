@@ -29,29 +29,6 @@
 
 <p>Template files are rendered using  <a href="/developers/guides/mustache">Mustache</a> regardless of the file extension.</p>
 
-<h2>Blot-specific constraints</h2>
-
-<ul>
-  <li><strong>No subdirectories for view files.</strong> Keep view files in the template root.</li>
-  <li><strong>No SCSS/Sass compilation.</strong> Use plain <code>.css</code> only.</li>
-  <li>Blot routes templates before serving static files. Avoid a view whose <code>url</code> conflicts with an existing post or page path unless that’s intentional.</li>
-  <li>Avoid view-name collisions: don’t create two views with the same basename (e.g. <code>feed.xml</code> and <code>feed.rss</code>) if you can avoid it.</li>
-</ul>
-
-<h2>Dashboard controls via <code>locals</code> naming</h2>
-
-<p>When adding new <code>locals</code> in <code>package.json</code>, use established naming conventions so Blot can generate dashboard controls automatically:</p>
-
-<ul>
-  <li><code>*_color</code> → color picker</li>
-  <li><code>font</code> or <code>*_font</code> → font picker (except <code>syntax_highlighter_font</code>)</li>
-  <li><code>*_url</code> → upload control</li>
-  <li><code>navigation_*</code> / <code>*_navigation</code> → navigation options group</li>
-  <li><code>date_display</code> + <code>hide_dates</code> → date format and toggle</li>
-  <li><code>syntax_highlighter</code> (and optional <code>syntax_highlighter_font</code>) → syntax theme controls</li>
-</ul>
-
-<p>Do not rename existing <code>locals</code> lightly; it can break existing template settings.</p>
 
 <h2>Edit templates locally</h2>
 
@@ -65,7 +42,8 @@
 
 <pre><code>/Templates/TemplateName</code></pre>
 
-<p>Blot will automatically build the template from the files placed in this directory.</p>
+<p>Blot will automatically build the template from the files placed in this directory. <strong>Do not create subdirectories for view files.</strong> Keep view files in the template root. 
+Avoid view-name collisions: don’t create two views with the same basename (e.g. <code>feed.xml</code> and <code>feed.rss</code>) if you can avoid it.</p>
 
 <p>You can download a ZIP file of the template’s source files from the web template editor. Click on <span class="ui-action"><span class="icon-copy"></span> Duplicate</span> then <span class="ui-action">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path d="M3.5 1.75v11.5c0 .09.048.173.126.217a.75.75 0 0 1-.752 1.298A1.748 1.748 0 0 1 2 13.25V1.75C2 .784 2.784 0 3.75 0h5.586c.464 0 .909.185 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0 1 12.25 15h-.5a.75.75 0 0 1 0-1.5h.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177L9.513 1.573a.25.25 0 0 0-.177-.073H7.25a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1 0-1.5h-3a.25.25 0 0 0-.25.25Zm3.75 8.75h.5c.966 0 1.75.784 1.75 1.75v3a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1-.75-.75v-3c0-.966.784-1.75 1.75-1.75ZM6 5.25a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 6 5.25Zm.75 2.25h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1 0-1.5ZM8 6.75A.75.75 0 0 1 8.75 6h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 8 6.75ZM8.75 3h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1 0-1.5ZM8 9.75A.75.75 0 0 1 8.75 9h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 8 9.75Zm-1 2.5v2.25h1v-2.25a.25.25 0 0 0-.25-.25h-.5a.25.25 0 0 0-.25.25Z"></path></svg>
