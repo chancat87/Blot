@@ -465,7 +465,7 @@ class HotDocPoller {
     });
 
     await sync(item.blogID);
-    this.lastSyncByBlog.set(item.blogID, now);
+    this.lastSyncByBlog.set(item.blogID, Date.now());
     return true;
   }
 
