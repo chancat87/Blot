@@ -57,6 +57,22 @@ const isRateLimitError = (err) => {
   );
 };
 
+const isNotFoundError = (err) => {
+  const code = err?.code || err?.status || err?.response?.status;
+  return code === 404;
+};
+
+const isPermissionError = (err) => {
+  const code = err?.code || err?.status || err?.response?.status;
+  return code === 401 || code === 403;
+};
+
+const getTerminalErrorReason = (err) => {
+  if (isNotFoundError(err)) return "not-found";
+  if (isPermissionError(err) && !isRateLimitError(err)) return "permission";
+  return null;
+};
+
 class HotDocPoller {
   constructor() {
     this.items = new Map();
@@ -436,11 +452,28 @@ class HotDocPoller {
         item.lastTriggerOutcome = "missing-path";
         return false;
       } else {
-        const file = await drive.files.get({
-          fileId: item.fileId,
-          fields: "id,mimeType,md5Checksum,modifiedTime",
-          supportsAllDrives: true,
-        });
+        let file;
+        try {
+          file = await drive.files.get({
+            fileId: item.fileId,
+            fields: "id,mimeType,md5Checksum,modifiedTime",
+            supportsAllDrives: true,
+          });
+        } catch (err) {
+          const reason = getTerminalErrorReason(err);
+          if (reason) {
+            this.log("download-terminal-error", {
+              reason,
+              blogID: item.blogID,
+              serviceAccountId: item.serviceAccountId,
+              fileId: item.fileId,
+              folderId: item.folderId,
+              message: err?.message,
+            }, "warn");
+          }
+
+          throw err;
+        }
 
         const download = require("../util/download");
         const result = await download(
@@ -504,6 +537,20 @@ class HotDocPoller {
           this.metrics.rateLimitEvents += 1;
           this.boostBackoffForServiceAccount(now, item.serviceAccountId);
           this.log("rate-limit", {
+            blogID: item.blogID,
+            serviceAccountId: item.serviceAccountId,
+            fileId: item.fileId,
+            message: err?.message,
+          }, "warn");
+          continue;
+        }
+
+        const terminalReason = getTerminalErrorReason(err);
+        if (terminalReason) {
+          this.items.delete(this.keyFor(item.blogID, item.fileId));
+          this.metrics.evictions += 1;
+          this.log("evicted", {
+            reason: terminalReason,
             blogID: item.blogID,
             serviceAccountId: item.serviceAccountId,
             fileId: item.fileId,
