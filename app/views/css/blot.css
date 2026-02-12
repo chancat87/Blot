@@ -2,7 +2,7 @@ html {
 
   --background-color: #fff;
   --medium-background-color: #e4eafb;
-  --light-background-color: #f7f9fe; 
+  --light-background-color: #F7F8FA; 
 
   --text-color: #000;
   --medium-text-color: #7e848f;
@@ -684,11 +684,20 @@ a.bordered-button {
   display: none;
 }
 
+kbd {
+  font-family: inherit;
+  font-size: 0.9em;
+  padding: 0.2em 0.5em;
+  border: 1px solid var(--dark-border-color);
+  border-radius: 4px;
+  color: var(--medium-text-color);
+}
+
 /* Guide callouts: info / warning / success / error (from documentation template, scoped to avoid conflicts) */
 .guide-callout {
   padding: 0 1em 0 2.8em;
   box-sizing: border-box;
-  margin: 1em 0;
+  margin: 1.4em 0;
   border-radius: 4px;
   border: 1px solid;
   font-size: 14px;
@@ -699,7 +708,7 @@ a.bordered-button {
   content: "";
   display: inline-block;
   position: absolute;
-  top: 1.2em;
+  top: 1.3em;
   left: 1em;
   background-color: currentColor;
   -webkit-mask-repeat: no-repeat;
