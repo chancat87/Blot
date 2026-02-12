@@ -390,6 +390,14 @@ class HotDocPoller {
 
     const didSync = await this.triggerDownloadAndSync(item);
     if (!didSync) {
+      // When download reports no content change (`updated !== true`), we still
+      // advance the polled revision state so we don't repeatedly retry a known
+      // non-updating revision on every poll tick.
+      if (item.lastTriggerOutcome === "download-no-update") {
+        item.lastKnownRevision = latest.lastKnownRevision;
+        item.lastKnownModifiedTime = latest.lastKnownModifiedTime;
+      }
+
       return;
     }
 
@@ -398,6 +406,7 @@ class HotDocPoller {
   }
 
   async triggerDownloadAndSync(item) {
+    item.lastTriggerOutcome = null;
     const now = Date.now();
     const lastSync = this.lastSyncByBlog.get(item.blogID);
 
@@ -407,6 +416,7 @@ class HotDocPoller {
         serviceAccountId: item.serviceAccountId,
         fileId: item.fileId,
       });
+      item.lastTriggerOutcome = "sync-cooldown";
       return false;
     }
 
@@ -423,6 +433,7 @@ class HotDocPoller {
           fileId: item.fileId,
           folderId: item.folderId,
         });
+        item.lastTriggerOutcome = "missing-path";
         return false;
       } else {
         const file = await drive.files.get({
@@ -452,6 +463,17 @@ class HotDocPoller {
         if (result?.updated && folder?.update) {
           await folder.update(path);
         }
+
+        if (result?.updated !== true) {
+          this.log("download-no-update", {
+            blogID: item.blogID,
+            serviceAccountId: item.serviceAccountId,
+            fileId: item.fileId,
+            folderId: item.folderId,
+          });
+          item.lastTriggerOutcome = "download-no-update";
+          return false;
+        }
       }
     } finally {
       await done();
@@ -466,6 +488,7 @@ class HotDocPoller {
 
     await sync(item.blogID);
     this.lastSyncByBlog.set(item.blogID, Date.now());
+    item.lastTriggerOutcome = "synced";
     return true;
   }
 
