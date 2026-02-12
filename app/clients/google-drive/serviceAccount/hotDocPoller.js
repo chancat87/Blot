@@ -406,8 +406,6 @@ class HotDocPoller {
       return false;
     }
 
-    this.lastSyncByBlog.set(item.blogID, now);
-
     const { done, folder } = await establishSyncLock(item.blogID);
     try {
       const drive = await this.getDrive(item.serviceAccountId);
@@ -462,6 +460,7 @@ class HotDocPoller {
     });
 
     await sync(item.blogID);
+    this.lastSyncByBlog.set(item.blogID, now);
     return true;
   }
 
