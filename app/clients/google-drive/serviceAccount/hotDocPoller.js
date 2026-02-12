@@ -181,8 +181,12 @@ class HotDocPoller {
     };
   }
 
-  boostBackoffForAll(now) {
+  boostBackoffForServiceAccount(now, serviceAccountId) {
     for (const item of this.items.values()) {
+      if (item.serviceAccountId !== serviceAccountId) {
+        continue;
+      }
+
       item.nextDueAt = now + RATE_LIMIT_BACKOFF_MS + jitterMs(5000);
       item.state = "backoff";
     }
@@ -297,7 +301,7 @@ class HotDocPoller {
     } catch (err) {
       if (isRateLimitError(err)) {
         this.metrics.rateLimitEvents += 1;
-        this.boostBackoffForAll(now);
+        this.boostBackoffForServiceAccount(now, serviceAccountId);
         this.log("rate-limit", {
           phase: "enqueue-initial-state",
           blogID,
@@ -475,7 +479,7 @@ class HotDocPoller {
       } catch (err) {
         if (isRateLimitError(err)) {
           this.metrics.rateLimitEvents += 1;
-          this.boostBackoffForAll(now);
+          this.boostBackoffForServiceAccount(now, item.serviceAccountId);
           this.log("rate-limit", {
             blogID: item.blogID,
             serviceAccountId: item.serviceAccountId,
