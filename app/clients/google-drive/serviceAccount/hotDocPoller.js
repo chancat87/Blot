@@ -419,6 +419,7 @@ class HotDocPoller {
           fileId: item.fileId,
           folderId: item.folderId,
         });
+        return false;
       } else {
         const file = await drive.files.get({
           fileId: item.fileId,
