@@ -9,7 +9,7 @@ const documentation = Express.Router();
 
 const VIEW_DIRECTORY = config.views_directory;
 
-documentation.get(["/how/format/*", "/how/files/markdown", "/how/formatting/tex"], function (req, res, next) {
+documentation.get(["/how/format/*", "/how/files/markdown", "/how/formatting/math"], function (req, res, next) {
   res.locals["show-on-this-page"] = true;
   next();
 });

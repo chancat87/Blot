@@ -872,7 +872,7 @@ a:has(.ui-action) {
   padding: 0;
   border-bottom: none;
   border-radius: 6px 6px 0 0;
-  margin-bottom: -1px;
+  margin-bottom: -2px;
 }
 .code-block-toolbar:has(.code-block-tabs),
 .code-block-toolbar:has(.code-block-label) {
@@ -881,12 +881,18 @@ a:has(.ui-action) {
 .code-block-toolbar--single {
   justify-content: flex-end;
 }
+
 .code-block-toolbar button.copy {
   position: absolute;
   top: 0;
   font-size: 12px;
   right: 0;
-  margin: 6px;
+  color: var(--medium-text-color);
+  padding: 12px;
+}
+.code-block-tabs + button.copy,
+.code-block-label + button.copy {
+  padding: 8px;
 }
 .code-block-tabs {
   display: flex;
@@ -900,7 +906,7 @@ a:has(.ui-action) {
   font-size:12px;
   color: #6b7280;
   text-decoration: none;
-  border-bottom: 2px solid transparent;
+  border-bottom: 1px solid transparent;
   transition: color 0.2s, border-color 0.2s;
 }
 .code-block-tabs li a:hover {
@@ -924,7 +930,7 @@ a:has(.ui-action) {
 
 
 
-/* For guide to using tex: /how/posts/tex */
+/* For guide to using tex: /how/formatting/math */
 div.tex table {
   table-layout: auto;
   margin-bottom: 1.5em;
