@@ -114,13 +114,15 @@ body {
   justify-content: space-between;
 }
 
-.main-section-how-left {
+.main-section-how-left,
+.main-section-content {
   width: 66.6666%;
   flex-grow: 0;
   min-width: 0;
 }
 
-.main-section-how-right {
+.main-section-how-right,
+.toc-sidebar {
   width: 33.3333%;
   max-width: 300px;
   flex-shrink: 0;
