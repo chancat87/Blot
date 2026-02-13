@@ -58,7 +58,18 @@ function emailUser(req, res, next) {
   Email.DELETED("", req.user, next);
 }
 function deleteBlogs(req, res, next) {
-  async.each(req.user.blogs, Blog.remove, next);
+  async.each(req.user.blogs || [], function (blogID, cb) {
+    Blog.remove(blogID, function (err) {
+      if (err && err.message === "No blog") {
+        console.warn("Blog already missing; continuing account deletion", {
+          blogID,
+        });
+        return cb();
+      }
+
+      cb(err);
+    });
+  }, next);
 }
 
 function deleteUser(req, res, next) {
