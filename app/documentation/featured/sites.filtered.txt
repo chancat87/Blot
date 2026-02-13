@@ -37,7 +37,6 @@
 #000000 jeankapsa.com Jean Kapsa, is a pianist
 #000000 www.declad.com Lewis Martin, is an architect
 #000000 notesof.com Thibault Michel, is a designer
-#000000 bgreen.lol Brandon Lucas Green, is a musician
 #000000 meredithgran.com Meredith Gran, is a cartoonist
 #000000 ellanew.com Ellane W, is a designer
 #000000 alongtheray.com Raymond Hines, is a writer
@@ -50,7 +49,6 @@
 #000000 words.studiopallister.com James Pallister, is a writer
 #000000 www.gillianrosselli.com Gillian Rosselli, is an artist
 #000000 www.caitlinmrivers.com Caitlin Rivers, is an epidemiologist
-#000000 jbeau.info Jeremy Beaudry, is an artist
 #000000 www.audunberdal.no Audun Berdal, is a designer
 #000000 www.amirsharif.com Amir Sharif, is a software engineer
 #000000 www.spakhm.com Slava Akhmechet, is a software engineer
