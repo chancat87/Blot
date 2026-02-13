@@ -13,6 +13,7 @@ var prettyPrice = require("helper/prettyPrice");
 var Stripe = require("stripe");
 
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+const BLOG_ID_REGEX = /^blog_[a-f0-9]+$/;
 
 let stripeClient = null;
 
@@ -59,10 +60,23 @@ function emailUser(req, res, next) {
 }
 function deleteBlogs(req, res, next) {
   async.each(req.user.blogs || [], function (blogID, cb) {
+    if (typeof blogID !== "string" || !BLOG_ID_REGEX.test(blogID)) {
+      console.warn("Invalid blog id during account deletion; continuing", {
+        uid: req.user && req.user.uid,
+        blogID,
+      });
+      return cb();
+    }
+
     Blog.remove(blogID, function (err) {
-      if (err && err.message === "No blog") {
-        console.warn("Blog already missing; continuing account deletion", {
+      if (
+        err &&
+        (err.message === "No blog" || err.message === "Invalid blog id")
+      ) {
+        console.warn("Blog cleanup anomaly; continuing account deletion", {
+          uid: req.user && req.user.uid,
           blogID,
+          reason: err.message,
         });
         return cb();
       }
