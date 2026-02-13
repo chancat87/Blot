@@ -69,26 +69,35 @@ async function deleteSubscription(req, res, next) {
   try {
     await ensureIssueDeletionRefund(req);
 
-    if (req.user.paypal?.status) {
-      const response = await fetch(
-        `${config.paypal.api_base}/v1/billing/subscriptions/${req.user.paypal.id}/cancel`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: buildPaypalAuthHeader(),
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            reason: "Customer deleted account",
-          }),
+    if (req.user.paypal?.id) {
+      const cancellablePaypalStatuses = ["ACTIVE", "SUSPENDED"];
+      const paypalStatus = String(req.user.paypal?.status || "").toUpperCase();
+
+      if (cancellablePaypalStatuses.includes(paypalStatus)) {
+        const response = await fetch(
+          `${config.paypal.api_base}/v1/billing/subscriptions/${req.user.paypal.id}/cancel`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: buildPaypalAuthHeader(),
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              reason: "Customer deleted account",
+            }),
+          }
+        );
+
+        if (response.status !== 204) {
+          throw await paypalError(response, "PayPal API error");
         }
-      );
 
-      if (response.status !== 204) {
-        throw await paypalError(response, "PayPal API error");
+        console.log("PayPal subscription canceled");
+      } else {
+        console.log(
+          `Skipping PayPal cancellation: subscription is already non-cancellable (status: ${paypalStatus || "MISSING"})`
+        );
       }
-
-      console.log("PayPal subscription canceled");
     } else if (req.user.subscription?.customer) {
       const client = getStripeClient();
 
