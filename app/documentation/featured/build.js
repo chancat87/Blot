@@ -39,11 +39,17 @@ async function build(callback) {
     .filter((i) => i)
     .map((line) => {
       var words = line.split(" ");
-      var link = "https://" + words[1];
-      var name = words.slice(2).join(" ").split(",")[0];
-      var bio = tidy(
-        words.slice(2).join(" ").split(",").slice(1).join(",").trim()
-      );
+      var link = "https://" + words[0];
+      var rest = words.slice(1).join(" ");
+      var parts = rest.split(",").map((p) => p.trim());
+      var name = parts[0];
+      var tenureStartYear = null;
+      var bioPart = parts.slice(1).join(", ");
+      if (parts.length >= 2 && /^\d{4}$/.test(parts[parts.length - 1])) {
+        tenureStartYear = parseInt(parts[parts.length - 1], 10);
+        bioPart = parts.slice(1, -1).join(", ");
+      }
+      var bio = tidy(bioPart);
       var host = toUnicode(parse(link).host);
 
       if (!avatars.find((i) => i.startsWith(host)))
@@ -54,6 +60,7 @@ async function build(callback) {
         host,
         name,
         bio,
+        tenureStartYear,
         avatar: join(
           avatarDirectory,
           avatars.find((i) => i.startsWith(host))
@@ -80,10 +87,17 @@ async function build(callback) {
 
       if (!isOnline) return null;
 
-      const tenure = await fetchSubscriptionDuration(site.host);
+      let tenure = null;
+      if (site.tenureStartYear != null) {
+        const startMs = Date.UTC(site.tenureStartYear, 0, 1);
+        tenure = Date.now() - startMs;
+      } else {
+        tenure = await fetchSubscriptionDuration(site.host);
+      }
 
+      const { tenureStartYear, ...rest } = site;
       return {
-        ...site,
+        ...rest,
         tenure,
         tenure_label: formatTenureLabel(tenure),
       };
@@ -103,11 +117,11 @@ function formatTenureLabel(durationMs) {
   const months = Math.max(1, completedMonths);
 
   if (months < 12) {
-    return `${months} month${months === 1 ? "" : "s"} on Blot`;
+    return `this year`;
   }
 
   const years = Math.max(1, Math.floor(months / 12));
-  return `${years} year${years === 1 ? "" : "s"} on Blot`;
+  return `${years} year${years === 1 ? "" : "s"} ago`;
 }
 
 const tidy = (bio) => {
