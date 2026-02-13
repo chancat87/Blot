@@ -1,7 +1,6 @@
 const clfdate = require("helper/clfdate");
 const database = require("../database");
 const disconnect = require("../disconnect");
-const establishSyncLock = require("sync/establishSyncLock");
 const createDriveClient = require("../serviceAccount/createDriveClient");
 const requestServiceAccount = require("clients/google-drive/serviceAccount/request");
 const parseBody = require("body-parser").urlencoded({ extended: false });
@@ -127,25 +126,12 @@ dashboard
       );
     }
 
-    let sync;
-
-    try {
-      sync = await establishSyncLock(blog.id);
-    } catch (e) {
-      return res.message(
-        req.baseUrl,
-        "Your folder is busy. Please try again later."
-      );
-    }
-
-    sync.folder.status("Waiting for invite to Google Drive folder");
-
     console.log(clfdate(), "Google Drive Client", "Setting up folder");
     res.redirect(req.baseUrl);
 
     // This can happen in the background
     try {
-      await finishSetup(blog, drive, email, sync, serviceAccountId);
+      await finishSetup(blog, drive, email, serviceAccountId);
     } catch (e) {
       console.log(clfdate(), "Google Drive Client: finishSetup", e);
     }
