@@ -3,6 +3,7 @@
 For chuck: I'll look into whether it's possible to do this without the tag folder '[Blog]' so we avoid tagging the posts. It should be possible to simply use a folder called 'Blog' and instead filter the {{#posts}} list based on the sub folder. I'll get back to you
 
 Switch templates from entries.html to index.html with explicit url: [].
+- fix docs on routing order
 
 Google Drive:
 - Add sync check
