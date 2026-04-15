@@ -36,10 +36,7 @@ RUN ARCH=$(echo ${TARGETPLATFORM} | sed -nE 's/^linux\/(amd64|arm64)$/\1/p') \
   && rm -r pandoc-${PANDOC_VERSION}
 
 # Sharp Runtime libs
-RUN apk add --no-cache --update \
-    --repository=https://dl-cdn.alpinelinux.org/alpine/edge/main \
-    --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community \
-    --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing \
+RUN apk add --no-cache \
     vips \
     vips-dev \
     vips-heif \
