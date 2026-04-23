@@ -1,4 +1,22 @@
+Fix bug with hypertext template and follow up with [31](https://mail.google.com/mail/u/0/#inbox/FMfcgzQgLPVXLRDkJTLCsKnMBRZdTklb)
+
+---
+
+Work out how to reverse zach's post on [a single tag page](https://mail.google.com/mail/u/0/#inbox/FMfcgzQgLFlPvWMjNXjrDNcNzPWfLXGb)
+
+Fix bug with auto heading injector and tell [Chuck](https://mail.google.com/mail/u/0/#inbox/FMfcgzQgKvJFLPslvxmlmMBnmcQQTqzq)
+
+Fix bug with tags on blog template when switching from {{#entries}} to {{#posts}} in https://blot.im/questions/3391
+
+Fix bug with [hypertext template blockquotes](https://mail.google.com/mail/u/0/#inbox/FMfcgzQgLFkHgQpSzXFdjfWFtvlDVXPB)
+
+Verify that bunny cdn bug with [url-encoded chars is resolved](https://mail.google.com/mail/u/0/#inbox/FMfcgzQfBGZHQxLrXsSJvfGcXPMMptDr)
+
+Chunk large drafts into multiple messages to avoid memory issues? 
+
 Move GitHub repo to own organization
+
+Turn Maxwell's repo into [developer guide tutorial](https://mail.google.com/mail/u/0/#inbox/FMfcgzQfCMvFrTTFzwKsnXnmbHsdlbSH)
 
 Redis caching:
 - Log redis cache stats
@@ -7,7 +25,6 @@ Redis caching:
 
 Fix bug with git client which let large pushes overwhelm the main server, leading to downtime
 
-Work out cause of bug with tags on darren's template when switching from {{#entries}} to {{#posts}} in https://blot.im/sites/darrencohen/template/text/source-code/entries.html/edit
 
 ---
 
