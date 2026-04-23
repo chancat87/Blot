@@ -9,7 +9,7 @@ module.exports = function () {
     RESP: 3,
     clientSideCache: {
       ttl: 0,
-      maxEntries: 10000,
+      maxEntries: 3333,
       evictPolicy: "LRU",
     },
   });
