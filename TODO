@@ -1,30 +1,23 @@
-Fix bug with hypertext template and follow up with [31](https://mail.google.com/mail/u/0/#inbox/FMfcgzQgLPVXLRDkJTLCsKnMBRZdTklb)
-
----
-
-Work out how to reverse zach's post on [a single tag page](https://mail.google.com/mail/u/0/#inbox/FMfcgzQgLFlPvWMjNXjrDNcNzPWfLXGb)
-
-Fix bug with auto heading injector and tell [Chuck](https://mail.google.com/mail/u/0/#inbox/FMfcgzQgKvJFLPslvxmlmMBnmcQQTqzq)
-
-Fix bug with tags on blog template when switching from {{#entries}} to {{#posts}} in https://blot.im/questions/3391
-
-Fix bug with [hypertext template blockquotes](https://mail.google.com/mail/u/0/#inbox/FMfcgzQgLFkHgQpSzXFdjfWFtvlDVXPB)
-
-Verify that bunny cdn bug with [url-encoded chars is resolved](https://mail.google.com/mail/u/0/#inbox/FMfcgzQfBGZHQxLrXsSJvfGcXPMMptDr)
-
-Chunk large drafts into multiple messages to avoid memory issues? 
-
 Move GitHub repo to own organization
-
-Turn Maxwell's repo into [developer guide tutorial](https://mail.google.com/mail/u/0/#inbox/FMfcgzQfCMvFrTTFzwKsnXnmbHsdlbSH)
 
 Redis caching:
 - Log redis cache stats
 - Remove LRU cache code from app/blog and elsewhere now we have the redis cache which does this automatically
 - Increase number of cached items?
 
-Fix bug with git client which let large pushes overwhelm the main server, leading to downtime
+Fix bug with hypertext template and follow up with [31](https://mail.google.com/mail/u/0/#inbox/FMfcgzQgLPVXLRDkJTLCsKnMBRZdTklb)
 
+Fix bug with [hypertext template blockquotes](https://mail.google.com/mail/u/0/#inbox/FMfcgzQgLFkHgQpSzXFdjfWFtvlDVXPB)
+
+Work out how to reverse zach's post on [a single tag page](https://mail.google.com/mail/u/0/#inbox/FMfcgzQgLFlPvWMjNXjrDNcNzPWfLXGb)
+
+Fix bug with tags on blog template when switching from {{#entries}} to {{#posts}} in https://blot.im/questions/3391
+
+Verify that bunny cdn bug with [url-encoded chars is resolved](https://mail.google.com/mail/u/0/#inbox/FMfcgzQfBGZHQxLrXsSJvfGcXPMMptDr)
+
+Chunk large drafts into multiple messages to avoid memory issues? 
+
+Fix bug with git client which let large pushes overwhelm the main server, leading to downtime
 
 ---
 
@@ -34,7 +27,7 @@ Hitting the save changes button under typeset settings spits you back out to hom
 
 Debug issue with warwickmostyn
 
-Fix bug where pages where appearing in the list of posts filtered by path_prefix AND tag – e.g. /work/tagged/automotive and tell Chuck
+
 
 Write useful benchmark tool for Blot
 - Add performance tests which output something like this for PRs (compare against master branch, fail if over threshold):
@@ -245,6 +238,10 @@ Fix bug with camelCase custom metadata and tell [questioner](https://blot.im/que
 Fix bug with [~/gitbug folder](https://mail.google.com/mail/u/0/#inbox/KtbxLxgKJJfmhMNplLBcTcFCPgBVNlGtHL) during setup
 - surface setup errors with git client
 - handle these errors nicely through sync status
+
+Fix bug with auto heading injector and tell [Chuck](https://mail.google.com/mail/u/0/#inbox/FMfcgzQgKvJFLPslvxmlmMBnmcQQTqzq)
+
+Fix bug where pages where appearing in the list of posts filtered by path_prefix AND tag – e.g. /work/tagged/automotive and tell Chuck
 
 Fix bug with huge draft crashing the sync server /a327ex/drafts/it_follows.txt
 
